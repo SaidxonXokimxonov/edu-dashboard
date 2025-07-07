@@ -4,6 +4,7 @@ import Groups from "./../pages/groups";
 import Staff from "./../pages/staff";
 import Students from "./../pages/students";
 import Finance from "./../pages/finance";
+import { EmployeeDetail } from "../pages/staff/employee-about";
 
 export default function AppRoutes() {
   return (
@@ -14,6 +15,7 @@ export default function AppRoutes() {
       <Route path="/staff" element={<Staff />} />
       <Route path="/students" element={<Students />} />
       <Route path="/finance" element={<Finance />} />
+      <Route path="/employee/:id" element={<EmployeeDetail/>}/>
     </Routes>
   );
 }
