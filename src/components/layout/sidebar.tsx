@@ -6,8 +6,8 @@ export default function Sidebar() {
       <div className="w-full flex justify-center items-center gap-4 h-[100px]">
         <div className="w-[50px] rounded-full border h-[50px]"></div>
         <div >
-          <h4>Jamila Azimova</h4>
-          <h5>+998 99 123 45 67</h5>
+          <h4 className="text-lg">Jamila Azimova</h4>
+          <h5 className="text-sm text-gray-600">+998 99 123 45 67</h5>
         </div>
       </div>
       <div className="flex pt-5  flex-col gap-2 items-center">
