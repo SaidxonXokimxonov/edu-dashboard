@@ -5,48 +5,35 @@ import { useNavigate } from "react-router-dom";
 import { AddStaffModal } from "../../components/add-staff-modal";
 import { toast } from "react-toastify";
 import { initialValues } from "./constants";
-import type { Employee, IStaffForm } from "./types";
+import type { IStaffForm } from "./types";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../redux/store";
+import { deleteStaff, getAllStaff } from "../../redux/reducers/staff/staffSlice";
 
 export default function Staff() {
+  const dispatch = useDispatch<AppDispatch>()
+  const { data, loading } = useSelector((state: RootState)=> state.staff)
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [employeesData, setEmployeesData] = useState<Employee[]>([]);
   const [refresh, setRefresh] = useState(false);
   const [formValues, setFormValues] = useState<IStaffForm>(initialValues);
 
   const navigate = useNavigate();
 
-  const handleDelete = useCallback(async (employeeId: number) => {
-    try {
-      setRefresh(true);
-      const response = await fetch(
-        `https://educationproject-production-1a26.up.railway.app/api/Staff/delete/${employeeId}`,
-        {
-          method: "DELETE",
-        }
-      );
-      if (response.ok) {
-        toast.success("Muvaffaqiyatli o'chirildi");
-      }
-      setRefresh(false);
-    } catch (error) {
-      console.log(error);
-    }
-
-    setOpenMenuIndex(null);
-  }, []);
+  function handleDelete(employeeId: number) {
+    dispatch(deleteStaff(employeeId))
+    setOpenMenuIndex(null)
+  }
 
   const handleClick = (id: number) => {
     navigate(`/employee/${id}`);
   };
 
-  useEffect(() => {
-    fetch(
-      "https://educationproject-production-1a26.up.railway.app/api/Staff/get-all"
-    )
-      .then((res) => res.json())
-      .then((res) => setEmployeesData(res));
-  }, [refresh]);
+  
+
+  useEffect(()=> {
+    dispatch(getAllStaff())
+  },[])
 
   return (
     <div>
@@ -82,7 +69,7 @@ export default function Staff() {
           </tr>
         </thead>
         <tbody>
-          {employeesData.map((emp, index) => (
+          {data?.map((emp, index) => (
             <tr
               onClick={() => handleClick(emp.id)}
               key={index}
