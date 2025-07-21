@@ -1,9 +1,10 @@
 import React, { useCallback } from "react";
 import { X } from "lucide-react";
-import { toast } from "react-toastify";
 import type { IStaffForm } from "../pages/staff/types";
-import { initialValues } from "../pages/staff/constants";
 import { normalizeDate } from "../pages/staff/utils";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../redux/store";
+import { addStaff, editStaff } from "../redux/reducers/staff/staffSlice";
 
 interface StaffProps {
   isModalOpen: boolean;
@@ -18,46 +19,67 @@ export const AddStaffModal = ({
   setFormValues,
   isModalOpen,
   setIsModalOpen,
-  setRefresh,
 }: StaffProps) => {
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setRefresh(true);
-      const res = await fetch(
-        `https://educationproject-production-1a26.up.railway.app/api/Staff/${
-          formValues?.id ? `update/${formValues?.id}` : "create"
-        }`,
-        {
-          method: formValues?.id ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...formValues,
-            birthDate: new Date(formValues?.birthDate).toISOString(),
-            userId: 1,
-          }),
-        }
-      );
-      if (res) {
-        toast.success(
-          formValues?.id
-            ? "Muvaffaqiyatli o'zgartirildi"
-            : "Muvaffaqiyatli qo'shildi"
-        );
-        setFormValues(initialValues);
-        setIsModalOpen(false);
-        console.log(formValues);
-      } else {
-        toast.error("Xatolik yuz berdi");
-      }
-      setRefresh(false);
-    } catch (err) {
-      toast.error("Xatolik yuz berdi");
-      console.log(err);
+
+    const dispatch = useDispatch<AppDispatch>()
+
+
+
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   try {
+  //     setRefresh(true);
+  //     const res = await fetch(
+  //       `https://educationproject-production-1a26.up.railway.app/api/Staff/${
+  //         formValues?.id ? `update/${formValues?.id}` : "create"
+  //       }`,
+  //       {
+  //         method: formValues?.id ? "PUT" : "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           ...formValues,
+  //           birthDate: new Date(formValues?.birthDate).toISOString(),
+  //           userId: 1,
+  //         }),
+  //       }
+  //     );
+  //     if (res) {
+  //       toast.success(
+  //         formValues?.id
+  //           ? "Muvaffaqiyatli o'zgartirildi"
+  //           : "Muvaffaqiyatli qo'shildi"
+  //       );
+  //       setFormValues(initialValues);
+  //       setIsModalOpen(false);
+  //       console.log(formValues);
+  //     } else {
+  //       toast.error("Xatolik yuz berdi");
+  //     }
+  //     setRefresh(false);
+  //   } catch (err) {
+  //     toast.error("Xatolik yuz berdi");
+  //     console.log(err);
+  //   }
+  // };
+
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if(formValues.id) {
+      dispatch(editStaff(formValues))
     }
-  };
+    else {      
+      console.log({...formValues, userId: 1});
+      dispatch(addStaff({...formValues, userId: 1}))
+    }
+
+    setIsModalOpen(false)
+  }
+
+
 
   const handleChangeElement = useCallback(
     (
